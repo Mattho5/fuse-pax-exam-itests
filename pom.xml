@@ -5,52 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
 
    
-        <groupId>org.jboss.fuse.qa</groupId>
+        <groupId>org.mattho.fuse.tests</groupId>
         <artifactId>fuse-pax-exam-itests</artifactId>
         <version>1.0-SNAPSHOT</version>
-   
-
-
 
     <properties>
-        <fuse.osgi.dynamic>*,org.apache.felix.service.*;status=provisional</fuse.osgi.dynamic>
-        <fuse.osgi.export>
-          org.fusesource.fabric.itests.paxexam.support.*;version=${fabricVersion};-noimport:=true,
-        org.fusesource.tooling.testing.pax.exam.karaf.*;version=${fabricVersion;-noimport:=true,use.osgi.export>
-        </fuse.osgi.export>
-        <fuse.osgi.import></fuse.osgi.import>
         <fabricVersion>7.3.0.redhat-199</fabricVersion>
     </properties>
 
 
     <dependencies>
-        <dependency>
-            <groupId>org.fusesource.fabric.itests</groupId>
-            <artifactId>fabric-itests-common</artifactId>
-            <version>${fabricVersion}</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.fusesource.tooling.testing</groupId>
-            <artifactId>pax-exam-karaf</artifactId>
-            <version>${fabricVersion}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit4</artifactId>
-            <version>2.6.0</version>
-
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>r09</version>
-
-        </dependency>
-
-         <!-- fabric dependencies -->
         <dependency>
             <groupId>org.fusesource.fabric</groupId>
             <artifactId>fuse-fabric</artifactId>
@@ -59,25 +23,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.fusesource.fabric</groupId>
-            <artifactId>fabric-boot-commands</artifactId>
+            <groupId>org.fusesource.fabric.itests</groupId>
+            <artifactId>fabric-itests-common</artifactId>
             <version>${fabricVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-        <groupId>org.fusesource.fabric</groupId>
-        <artifactId>fabric-api</artifactId>
-        <version>${fabricVersion}</version>
+            <groupId>org.fusesource.fabric</groupId>
+            <artifactId>fabric-api</artifactId>
+            <version>${fabricVersion}</version>
         </dependency>
 
         <dependency>
@@ -88,64 +43,23 @@
 
         <dependency>
             <groupId>org.fusesource.fabric</groupId>
-            <artifactId>fabric-maven-proxy</artifactId>
-            <version>${fabricVersion}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.fusesource.fabric</groupId>
-            <artifactId>fabric-core-agent-ssh</artifactId>
-            <version>${fabricVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.fabric</groupId>
-            <artifactId>fabric-git-hawtio</artifactId>
-            <version>${fabricVersion}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.fusesource.fabric</groupId>
             <artifactId>fabric-zookeeper</artifactId>
             <version>${fabricVersion}</version>
         </dependency>
 
-
-
-
-        <!--  Karaf Dependencies      -->
         <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-spi</artifactId>
-            <version>2.6.0</version>
+            <groupId>org.fusesource.fabric</groupId>
+            <artifactId>fabric-zookeeper-commands</artifactId>
+            <version>${fabricVersion}</version>
         </dependency>
 
-
-        <!--  Karaf Dependencies      -->
         <dependency>
-            <groupId>org.apache.karaf.tooling.exam</groupId>
-            <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
-            <version>2.3.3</version>
+            <groupId>org.fusesource.fabric</groupId>
+            <artifactId>fabric-groups</artifactId>
+            <version>${fabricVersion}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.karaf.tooling.exam</groupId>
-            <artifactId>org.apache.karaf.tooling.exam.options</artifactId>
-            <version>2.3.3</version>
-        </dependency>
-
-
-
-          <!--  JUNIT dependency        -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-
-
-
-
-
     </dependencies>
+
     <repositories>
         <repository>
             <id>ops4j-releases</id>
