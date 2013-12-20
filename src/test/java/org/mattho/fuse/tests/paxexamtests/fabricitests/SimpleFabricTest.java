@@ -1,4 +1,4 @@
-package org.jboss.fuse.qa.paxexamtests.fabricitests;
+package org.mattho.fuse.tests.paxexamtests.fabricitests;
 
 
 import org.apache.karaf.tooling.exam.options.DoNotModifyLogOption;
@@ -78,6 +78,8 @@ public class SimpleFabricTest extends FabricTestSupport {
          public Option[] config() {
                return new Option[]{
                         new DefaultCompositeOption(fabricDistributionConfiguration()),
+                       mavenBundle("org.fusesource.fabric.itests", "fabric-itests-common", MavenUtils.getArtifactVersion("org.fusesource.fabric.itests", "fabric-itests-common")),
+                       editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.proxySupport", "true"),
                 };
          }
 
@@ -143,4 +145,5 @@ public class SimpleFabricTest extends FabricTestSupport {
 
 
 }
+
 
