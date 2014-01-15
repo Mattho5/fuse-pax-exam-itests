@@ -1,6 +1,5 @@
 package org.mattho.fuse.tests.paxexamtests.fabricitests;
 
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.DiscoveryEvent;
 import org.apache.activemq.transport.discovery.DiscoveryListener;
@@ -28,7 +27,9 @@ import org.osgi.framework.Bundle;
 
 import javax.jms.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -131,7 +132,25 @@ public class SimpleFabricTest extends FabricTestSupport {
     @Test
     public void fabricRegistryTest() throws Exception {
         initFabric();
-        initReplicatedNodes("child",3,"replicated");
+        initReplicatedNodes("brokers","child",3,"replicated");
+        Container master =fabricService.getContainer(whoIsMaster("brokers","replicated"));
+
+        System.out.println("New master is:"+whoIsMaster("brokers","replicated"));
+        master.stop();
+        master.start();
+        Thread.sleep(10000);
+        System.out.println("New master is:"+whoIsMaster("brokers","replicated"));
+      //  master.start();
+        Thread.sleep(10000);
+        master =fabricService.getContainer(whoIsMaster("brokers","replicated"));
+        master.stop();
+        master.start();
+        Thread.sleep(10000);
+        System.out.println("New master is:"+whoIsMaster("brokers","replicated"));
+      //  master.start();
+        Thread.sleep(5000);
+
+        System.out.println(executeCommand("fabric:cluster-list"));
 
       /*  System.out.println(executeCommand( "fabric:create -n"));
 
@@ -184,7 +203,7 @@ public class SimpleFabricTest extends FabricTestSupport {
     }
 
 
-     private void initReplicatedNodes(String name,int numberOfReplicas,String group) throws Exception {
+     private void initReplicatedNodes(String brokername, String childname,int numberOfReplicas,String group) throws Exception {
         //String name="child";
 
        /* CuratorFramework curatorFramework = getCurator();
@@ -192,7 +211,7 @@ public class SimpleFabricTest extends FabricTestSupport {
         final FabricDiscoveryAgent discoveryAgent = new FabricDiscoveryAgent();
                                                                                      */
         System.out.println("CREATING CONTAINER");
-        ChildContainerBuilder.child(numberOfReplicas).assertProvisioningResult().withName(name).build();
+        ChildContainerBuilder.child(numberOfReplicas).assertProvisioningResult().withName(childname).build();
 
         System.out.println(executeCommand("fabric:container-list"));
         //   f.get
@@ -217,13 +236,13 @@ public class SimpleFabricTest extends FabricTestSupport {
            -*/
         System.out.println(executeCommand("osgi:list"));
 
-        String containers=getContainerList(name,numberOfReplicas);
-        System.out.println(executeCommand(" mq-create --parent-profile mq-replicated --group "+group+" --assign-container "+containers+" brokers"));
+        String containers=getContainerList(childname,numberOfReplicas);
+        System.out.println(executeCommand(" mq-create --parent-profile mq-replicated --group "+group+" --assign-container "+containers+" "+brokername));
         System.out.println(executeCommand("fabric:container-list"));
 
         Thread.sleep(3000);
         for(int i=1;i<=numberOfReplicas;i++)
-            waitForProvision(name+i);
+            waitForProvision(childname+i);
 
 
        // Thread.sleep(10000);
@@ -231,6 +250,7 @@ public class SimpleFabricTest extends FabricTestSupport {
         System.out.println("waiting for cluster");
         Thread.sleep(120000);
         System.out.println(executeCommand("fabric:cluster-list"));
+
         //f.a
 
     }
@@ -284,10 +304,21 @@ public class SimpleFabricTest extends FabricTestSupport {
         return result;
     }
 
-    private String whoIsMaster(){
-       Container c = fabricService.getContainer("child1");
-      //  c.get
-      return "";
+    private  String whoIsMaster(String name,String group) {
+        String input = executeCommand("cluster-list | grep -A 1 fusemq/"+group+"  | grep "+name);
+
+        String out = input.replaceAll(" ", "\\|");
+        String[] array = out.split("\\|");
+
+        List<String> l = new ArrayList<String>();
+
+        for (String s : array) {
+            if (!s.equals(""))
+                l.add(s);
+        }
+
+        return l.get(1);
+
     }
 
 
