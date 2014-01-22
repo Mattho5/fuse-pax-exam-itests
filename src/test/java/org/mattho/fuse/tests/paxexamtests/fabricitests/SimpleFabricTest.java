@@ -1,6 +1,8 @@
 package org.mattho.fuse.tests.paxexamtests.fabricitests;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.jmx.BrokerView;
+import org.apache.activemq.broker.jmx.BrokerViewMBean;
 import org.apache.activemq.command.DiscoveryEvent;
 import org.apache.activemq.transport.discovery.DiscoveryListener;
 import org.apache.curator.framework.CuratorFramework;
@@ -26,6 +28,8 @@ import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
 import org.osgi.framework.Bundle;
 
 import javax.jms.*;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,12 +137,44 @@ public class SimpleFabricTest extends FabricTestSupport {
     public void fabricRegistryTest() throws Exception {
         initFabric();
         initReplicatedNodes("brokers","child",3,"replicated");
-        Container master =fabricService.getContainer(whoIsMaster("brokers","replicated"));
+     //   Container master =fabricService.getContainer(whoIsMaster("brokers","replicated"));
 
-        System.out.println("New master is:"+whoIsMaster("brokers","replicated"));
+
+      //  String newMaster=   whoIsMaster("brokers","replicated");
+         Container master= whoIsMaster("child",3,"brokers");
+
+        System.out.println("New master is:"+master.getId());
         master.stop();
         master.start();
+
         Thread.sleep(10000);
+
+        master= whoIsMaster("child",3,"brokers");
+        System.out.println("New master is:"+master.getId());
+
+        master.stop();
+        master.start();
+
+        Thread.sleep(10000);
+
+        master= whoIsMaster("child",3,"brokers");
+        System.out.println("New master is:"+master.getId());
+
+      //  master.stop();
+      //  master.start();
+
+     //   Thread.sleep(500);
+
+
+     /*   System.out.println("New master is:"+newMaster);
+
+        Assert.assertTrue(isContainerMasterJMX(fabricService.getContainer(newMaster), "brokers"));
+
+        master.stop();
+        master.start();
+
+        Thread.sleep(10000);
+
         System.out.println("New master is:"+whoIsMaster("brokers","replicated"));
       //  master.start();
         Thread.sleep(10000);
@@ -151,6 +187,9 @@ public class SimpleFabricTest extends FabricTestSupport {
         Thread.sleep(5000);
 
         System.out.println(executeCommand("fabric:cluster-list"));
+
+
+       */
 
       /*  System.out.println(executeCommand( "fabric:create -n"));
 
@@ -248,7 +287,7 @@ public class SimpleFabricTest extends FabricTestSupport {
        // Thread.sleep(10000);
       //  assertTrue(serviceLatch.await(40, TimeUnit.SECONDS));
         System.out.println("waiting for cluster");
-        Thread.sleep(120000);
+        Thread.sleep(20000);
         System.out.println(executeCommand("fabric:cluster-list"));
 
         //f.a
@@ -321,7 +360,30 @@ public class SimpleFabricTest extends FabricTestSupport {
 
     }
 
+    private Boolean isContainerMasterJMX(Container c,String brokerName) throws Exception {
+        BrokerViewMBean broker=null;
+        ObjectName name=new ObjectName("org.apache.activemq:type=Broker,brokerName="+brokerName);
+        broker= (BrokerViewMBean) getMBean(c,name,BrokerViewMBean.class);
 
+        return !broker.isSlave();
+    }
+
+
+    private Container whoIsMaster(String names,int count,String brokerName) throws Exception {
+        Container res=null;
+        for(int i=1;i<=count;i++){
+            System.out.println("trying to connect to: "+names+i);
+            // fabricService.g
+           res=fabricService.getContainer(names+i);
+
+            if(isContainerMasterJMX(res,brokerName))
+                return res;
+        }
+
+       throw new Exception("NO MASTER WAS FOUND ! ");
+
+
+    }
     public static void main(String[] args){
 
         System.out.println(getContainerList("child",5));
